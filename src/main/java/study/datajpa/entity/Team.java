@@ -15,12 +15,12 @@ public class Team {
     @Id @GeneratedValue
     @Column(name = "team_id")
     private Long id;
-    private String username;
+    private String name;
 
     @OneToMany(mappedBy = "team")
     private List<Member> members = new ArrayList<>();
 
-    public Team(String username) {
-        this.username = username;
+    public Team(String name) {
+        this.name = name;
     }
 }
