@@ -59,4 +59,37 @@ public class MemberJpaRepository {
                 .setParameter("username", username)
                 .getResultList();
     }
+
+    /**
+     * 순수 JPA 페이징과 정렬
+     * offset : 몇 번째부터 시작해서
+     * limit : 몇 개를 가져와라
+     */
+    public List<Member> findByPage(int age, int offset, int limit) {
+        return em.createQuery("select m from Member m where m.age = :age order by m.username desc", Member.class)
+                .setParameter("age", age)
+                .setFirstResult(offset) // 몇 번째 페이지부터 가져올거야
+                .setMaxResults(limit) // 개수를 몇 개 가져올거야 (한페이지 크기)
+                .getResultList();
+    }
+
+    /**
+     * 보통 페이징 쿼리를 짜면
+     * 현재 페이지가 전체 페이지중 몇번째 페이지인지 표시하니까
+     * totalCount 필요함
+     */
+    public long totalCount(int age){
+        return em.createQuery("select count(m) from Member m where m.age = :age", Long.class)
+                .setParameter("age", age)
+                .getSingleResult();
+    }
+
+    /**
+     * 벌크성 수정쿼리
+     */
+    public int bulkAgePlus(int age) {
+        return em.createQuery("update Member m set m.age = m.age+1 where m.age >= : age")
+                .setParameter("age",age)
+                .executeUpdate(); //이거 실행하면, 응답값으로 개수가 나옴
+    }
 }
