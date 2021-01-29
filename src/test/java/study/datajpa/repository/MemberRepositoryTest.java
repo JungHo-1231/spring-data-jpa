@@ -14,6 +14,8 @@ import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
 
 import javax.persistence.EntityManager;
+import javax.sql.DataSource;
+import java.sql.Connection;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +31,9 @@ class MemberRepositoryTest {
     @Autowired TeamRepository teamRepository;
     @Autowired
     EntityManager em;
+
+    @Autowired
+    MemberQueryRepository memberQueryRepository;
 
     @Test
     void testMember(){
@@ -294,4 +299,50 @@ class MemberRepositoryTest {
 
         //then
     }
+
+    @Test
+    void queryHint(){
+        //given
+        Member member1 = new Member("member1", 10);
+        memberRepository.save(member1);
+
+        em.flush();
+        em.clear();
+
+        //when
+//        Member findMember = memberRepository.findById(member1.getId()).get();
+        Member findMember = memberRepository.findReadOnlyByUsername("member1");
+        findMember.setUsername("member2");
+
+        em.flush();
+        //then
+
+    }
+
+    @Test
+    void lock(){
+        //given
+        Member member1 = new Member("member1", 10);
+        memberRepository.save(member1);
+
+        em.flush();
+        em.clear();
+
+        //when
+        List<Member> result = memberRepository.findLockByUsername("member1");
+
+
+        //then
+
+    }
+
+    @Test
+    void callCustom(){
+        //given
+        List<Member> result = memberRepository.findMemberCustom();
+        //when
+
+        //then
+    }
+
 }
